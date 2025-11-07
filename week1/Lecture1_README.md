@@ -231,15 +231,32 @@ RUN cmake ../ && make && make install
 WORKDIR /source
 ```
 
-You can either use docker to build an "image" with all this stuff installed.
+We can use docker to build an "image" with all this stuff installed. This course provides a Dockerfile to build a self-contained C/C++ development environment. It includes all the necessary tools for this course, such as:
+* `g++` / `gcc`
+* `make` / `cmake`
+* `gdb` (The GNU Debugger)
+* `valgrind` (for memory leak detection)
+* AddressSanitizer (ASan)
+* GoogleTest (for unit testing)
 
-Or you can use pre-build images in the Dockerfile for this course, available at
+You will edit code on your main computer (the "host") and compile/run it *inside* the container.
+All files in this project directory (the one containing your `Dockerfile` and `docker-compose.yml`) are automatically shared with the Docker container.
 
-> [https://hub.docker.com/r/klavins/ecep520](https://hub.docker.com/r/klavins/ecep520).
+You can create your homework folders, `main.cpp` files, and `Makefiles` right here, and they will be inside the container for you to compile.
 
-To download the image, run in a terminal window the following command:
+A good structure would be:
+
 ```
-docker pull klavins/ecep520:cppenv
+520-Assignments/
+│
+├── docker-compose.yml    (From course)
+├── Dockerfile            (From course)
+│
+├── hw1/                  (Your work)
+│   └── main.cpp
+│
+└── hw2/                  (Your work)
+    └── my_program.cpp
 ```
 
 Installing Docker
@@ -277,23 +294,49 @@ Vocabulary:
 - **image**: stateless set of files in a filesystem
 - **container**: A running unix kernel using that filesystem
 
-Make sure you downloaded the image with the following command in a terminal window:
+Step 1: Build and Start the Container
+
+Open a terminal and navigate to this project directory. Run the following command:
+
 ```
-docker pull klavins/ecep520:cppenv
+docker-compose up -d --build
 ```
 
-To mount the `week1` directory in a docker container and access the shell within the container, do:
-```bash
-docker run -v $PWD/week1:/source -it klavins/ecep520:cppenv bash
-```
-on a Mac or Linux.
+This command will:
 
-On windows you will have to use the full path, as in
-```bash
-docker run -v /c/Users/You/Code/EEP520-W20/week1:/source -it klavins/ecep520:cppenv bash
+Build your Docker image (the first time, this will take several minutes).
+
+Create and start your eep520 container in the background (-d).
+
+You can run this same command every time. It will intelligently start, re-create, or build the container as needed.
+
+Step 2: Get a Shell Inside the Container
+
+Now that the container is running, "enter" it by running this command:
+
+```
+docker exec -it eep520 /bin/bash
 ```
 
-The current directory will be mounted as though it were a disk drive at the container directory `/source`, which is also where you'll be when you start the image.
+Your terminal prompt will change. You are now "inside" the Docker container and are in the /workspace directory (which is the same as your project directory). You can check by typing ls. 
+
+Step 3: Do Your Work
+Inside the container, you can now compile and run your code just as you would on a standard Linux machine.
+
+Step 4: Exit the Container
+When you are done, just type exit to leave the container.
+
+```
+exit
+```
+Your terminal will return to normal. The container will keep running in the background.
+
+Step 5: Stopping the Container
+When you are completely finished working for the day, run this command to stop and remove the container. 
+
+```
+docker-compose down
+```
 
 **Note:** Files in the mounted directory can be edited from the host machine terminal session.
 
