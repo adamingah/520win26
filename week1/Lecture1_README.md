@@ -35,7 +35,7 @@ Resources
 ---
 - **Canvas**
 - **Github**
-    - Course repo: https://github.com/sosper30/eep520-wi26
+    - Course repo: https://github.com/sosper30/520win26.git
         - Lecture notes in week_1/README.md (go there now)
     - Your homework repo (more on this later)
 - **Docker**: https://docs.docker.com/get-docker/
